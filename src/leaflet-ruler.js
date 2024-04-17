@@ -25,7 +25,7 @@
         dashArray: '1,6'
       },
       lengthUnit: {
-        display: 'km',
+        display: 'm',
         decimal: 2,
         factor: null,
         label: 'Distance:'
@@ -97,6 +97,12 @@
         }
         var text;
         this._totalLength += this._result.Distance;
+        if (this.options.lengthUnit.display === 'km' && this._result.Distance < 1) { 
+            this.options.lengthUnit.display = 'm'; 
+            this.options.lengthUnit.factor = 1000; 
+        } else if(this.options.lengthUnit.display === 'm' && this._result.Distance > 1000){
+            this.options.lengthUnit.display = 'km';
+            this.options.lengthUnit.factor = 1; 
         if (this._clickCount > 1){
           text = '<b>' + this.options.angleUnit.label + '</b>&nbsp;' + this._result.Bearing.toFixed(this.options.angleUnit.decimal) + '&nbsp;' + this.options.angleUnit.display + '<br><b>' + this.options.lengthUnit.label + '</b>&nbsp;' + this._totalLength.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' +  this.options.lengthUnit.display;
         }
@@ -123,6 +129,13 @@
         this._tempPoint.addTo(this._map);
         this._calculateBearingAndDistance();
         this._addedLength = this._result.Distance + this._totalLength;
+        if (this.options.lengthUnit.display === 'km' && this._result.Distance < 1) { 
+            this.options.lengthUnit.display = 'm'; 
+            this.options.lengthUnit.factor = 1000; 
+        } else if(this.options.lengthUnit.display === 'm' && this._result.Distance > 1000){
+            this.options.lengthUnit.display = 'km';
+            this.options.lengthUnit.factor = 1; 
+}
         L.polyline([this._clickedLatLong, this._movingLatLong], this.options.lineStyle).addTo(this._tempLine);
         if (this._clickCount > 1){
           text = '<b>' + this.options.angleUnit.label + '</b>&nbsp;' + this._result.Bearing.toFixed(this.options.angleUnit.decimal) + '&nbsp;' + this.options.angleUnit.display + '<br><b>' + this.options.lengthUnit.label + '</b>&nbsp;' + this._addedLength.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' +  this.options.lengthUnit.display + '<br><div class="plus-length">(+' + this._result.Distance.toFixed(this.options.lengthUnit.decimal) + ')</div>';
