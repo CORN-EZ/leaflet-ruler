@@ -102,7 +102,8 @@
             this.options.lengthUnit.factor = 1000; 
         } else if(this.options.lengthUnit.display === 'm' && this._result.Distance > 1000){
             this.options.lengthUnit.display = 'km';
-            this.options.lengthUnit.factor = 1; 
+            this.options.lengthUnit.factor = 1;
+        }
         if (this._clickCount > 1){
           text = '<b>' + this.options.angleUnit.label + '</b>&nbsp;' + this._result.Bearing.toFixed(this.options.angleUnit.decimal) + '&nbsp;' + this.options.angleUnit.display + '<br><b>' + this.options.lengthUnit.label + '</b>&nbsp;' + this._totalLength.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' +  this.options.lengthUnit.display;
         }
