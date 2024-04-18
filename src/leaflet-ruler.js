@@ -1,3 +1,8 @@
+var blockingRectangle = L.rectangle([[0, 0], [180, 360]], {
+    pointerEvents: 'none',
+    fill: 'red',
+    fillOpacity: 0
+  });
 (function(factory, window) {
     "use strict";
     if (typeof define === 'function' && define.amd) {
@@ -26,10 +31,11 @@
                 dashArray: '1,6'
             },
             lengthUnit: {
-                display: 'м',
+                display: 'км',
                 decimal: 3,
-                factor: 1000,
-                label: 'Дистанция:'
+                factor: 1,
+                // label: 'Дистанция:'
+                label: ''
             },
             angleUnit: {
                 display: '&deg;',
@@ -62,7 +68,8 @@
             this._clickedLatLong = null;
             this._clickedPoints = [];
             this._totalLength = 0;
-            if (this._choice) {                
+            if (this._choice) {             
+                blockingRectangle.addTo(map);   
                 this._map.doubleClickZoom.disable();
                 this._map.contextmenu.disable();
                 // L.DomEvent.on(this._map._container, 'keydown', this._escape, this);
@@ -83,6 +90,7 @@
                 this._map.on('mousemove', this._moving, this);
                 
             } else {
+                map.removeLayer(blockingRectangle)
                 this._map.doubleClickZoom.enable();
                 this._map.contextmenu.enable();
 
@@ -109,18 +117,19 @@
                 var text;
                 this._totalLength += this._result.Distance;
 
-                if (this.options.lengthUnit.display === 'км' && this._result.Distance < 1) { 
-                    this.options.lengthUnit.display = 'м'; 
-                    this.options.lengthUnit.factor = 1000; 
-                } else if(this.options.lengthUnit.display === 'м' && this._result.Distance > 1000){
-                    this.options.lengthUnit.display = 'км';
-                    this.options.lengthUnit.factor = 1; 
-                }
+                // if (this.options.lengthUnit.display === 'км' && this._result.Distance < 1) { 
+                //     this.options.lengthUnit.display = 'м'; 
+                //     this.options.lengthUnit.factor = 1000; 
+                // } else if(this.options.lengthUnit.display === 'м' && this._result.Distance > 1000){
+                //     this.options.lengthUnit.display = 'км';
+                //     this.options.lengthUnit.factor = 1; 
+                // }
 
                 if (this._clickCount > 1) {
-                    text = '<b>' + this.options.angleUnit.label + '</b>&nbsp;' + this._result.Bearing.toFixed(this.options.angleUnit.decimal) + '&nbsp;' + this.options.angleUnit.display + '<br><b>' + this.options.lengthUnit.label + '</b>&nbsp;' + this._totalLength.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display;
+                    text =this.options.lengthUnit.label + '</b>&nbsp;' + this._totalLength.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display;
+                    // text = '<b>' + this.options.angleUnit.label + '</b>&nbsp;' + this._result.Bearing.toFixed(this.options.angleUnit.decimal) + '&nbsp;' + this.options.angleUnit.display + '<br><b>' + this.options.lengthUnit.label + '</b>&nbsp;' + this._totalLength.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display;
                 } else {
-                    text = '<b>' + this.options.angleUnit.label + '</b>&nbsp;' + this._result.Bearing.toFixed(this.options.angleUnit.decimal) + '&nbsp;' + this.options.angleUnit.display + '<br><b>' + this.options.lengthUnit.label + '</b>&nbsp;' + this._result.Distance.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display;
+                    text =this.options.lengthUnit.label + '</b>&nbsp;' + this._result.Distance.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display;
                 }
                 L.circleMarker(this._clickedLatLong, this.options.circleMarker).bindTooltip(text, { permanent: true, className: 'result-tooltip',direction: 'center', offset: [0, -20]}).addTo(this._pointLayer).openTooltip();
             }
@@ -144,19 +153,19 @@
                 this._calculateBearingAndDistance();
                 this._addedLength = this._result.Distance + this._totalLength;
                 
-                if (this.options.lengthUnit.display === 'км' && this._result.Distance < 1) { 
-                    this.options.lengthUnit.display = 'м'; 
-                    this.options.lengthUnit.factor = 1000; 
-                } else if(this.options.lengthUnit.display === 'м' && this._result.Distance > 1000){
-                    this.options.lengthUnit.display = 'км';
-                    this.options.lengthUnit.factor = 1; 
-                }
+                // if (this.options.lengthUnit.display === 'км' && this._result.Distance < 1) { 
+                //     this.options.lengthUnit.display = 'м'; 
+                //     this.options.lengthUnit.factor = 1000; 
+                // } else if(this.options.lengthUnit.display === 'м' && this._result.Distance > 1000){
+                //     this.options.lengthUnit.display = 'км';
+                //     this.options.lengthUnit.factor = 1; 
+                // }
 
                 L.polyline([this._clickedLatLong, this._movingLatLong], this.options.lineStyle).addTo(this._tempLine);
                 if (this._clickCount > 1) {
-                    text = '<b>' + this.options.angleUnit.label + '</b>&nbsp;' + this._result.Bearing.toFixed(this.options.angleUnit.decimal) + '&nbsp;' + this.options.angleUnit.display + '<br><b>' + this.options.lengthUnit.label + '</b>&nbsp;' + this._addedLength.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display + '<br><div class="plus-length">(+' + this._result.Distance.toFixed(this.options.lengthUnit.decimal) + ')</div>';
+                    text = this.options.lengthUnit.label + '</b>&nbsp;' + this._addedLength.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display + '<br><div class="plus-length">(+' + this._result.Distance.toFixed(this.options.lengthUnit.decimal) + ')</div>';
                 } else {
-                    text = '<b>' + this.options.angleUnit.label + '</b>&nbsp;' + this._result.Bearing.toFixed(this.options.angleUnit.decimal) + '&nbsp;' + this.options.angleUnit.display + '<br><b>' + this.options.lengthUnit.label + '</b>&nbsp;' + this._result.Distance.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display;
+                    text = this.options.lengthUnit.label + '</b>&nbsp;' + this._result.Distance.toFixed(this.options.lengthUnit.decimal) + '&nbsp;' + this.options.lengthUnit.display;
                 }
                 L.circleMarker(this._movingLatLong, this.options.circleMarker).bindTooltip(text, { sticky: true, offset: L.point(0, -30),direction: 'center', className: 'moving-tooltip' }).addTo(this._tempPoint).openTooltip();
             }
